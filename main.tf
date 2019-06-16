@@ -3,21 +3,21 @@ locals {
 }
 
 resource "openstack_compute_keypair_v2" "this" {
-  count      = "${var.generate_ssh_key}"
+  count      = "${var.generate_ssh_key ? 1 : 0}"
   name = "${var.name}"
 }
 
 resource "openstack_compute_keypair_v2" "this_provided" {
-  count      = "${1 - var.generate_ssh_key}"
+  count      = "${var.generate_ssh_key ? 0 : 1}"
 
   name = "${var.name}"
   public_key = "${file("${var.public_key_file}")}"
 }
 
 resource "local_file" "private_key_pem" {
-  count      = "${1 - var.generate_ssh_key}"
+  count      = "${var.generate_ssh_key ? 0 : 1}"
 
   depends_on = ["openstack_compute_keypair_v2.this_provided"]
-  content    = "${openstack_compute_keypair_v2.this_provided.private_key}"
+  content    = "${openstack_compute_keypair_v2.this_provided.0.private_key}"
   filename   = "${local.private_key_filename}"
 }
