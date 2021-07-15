@@ -1,14 +1,18 @@
+output "id" {
+  description = "SSH Key id"
+  value       = digitalocean_ssh_key.this.id
+}
 output "name" {
-  description = "Private Key"
-  value       = "${openstack_compute_keypair_v2.this.0.name}"
+  description = "SSH Key name"
+  value       = digitalocean_ssh_key.this.name
 }
 
-output "private_key" {
-  description = "Private Key"
-  value       = "${openstack_compute_keypair_v2.this.0.private_key}"
-}
-
-output "public_key_file" {
+output "public_key" {
   description = "Public Key"
-  value       = "${openstack_compute_keypair_v2.this_provided.0.public_key}"
+  value       = digitalocean_ssh_key.this.public_key
+}
+
+output "fingerprint" {
+  description = "SSH Fingerprint"
+  value       = digitalocean_ssh_key.this.fingerprint
 }

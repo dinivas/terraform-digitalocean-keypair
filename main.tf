@@ -1,23 +1,13 @@
-locals {
-  private_key_filename = "${format("%s.%s", var.name, "key")}"
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
 }
 
-resource "openstack_compute_keypair_v2" "this" {
-  count      = "${var.generate_ssh_key ? 1 : 0}"
-  name = "${var.name}"
-}
-
-resource "openstack_compute_keypair_v2" "this_provided" {
-  count      = "${var.generate_ssh_key ? 0 : 1}"
-
-  name = "${var.name}"
-  public_key = "${file("${var.public_key_file}")}"
-}
-
-resource "local_file" "private_key_pem" {
-  count      = "${var.generate_ssh_key ? 0 : 1}"
-
-  depends_on = ["openstack_compute_keypair_v2.this_provided"]
-  content    = "${openstack_compute_keypair_v2.this_provided.0.private_key}"
-  filename   = "${local.private_key_filename}"
+resource "digitalocean_ssh_key" "this" {
+  name       = var.name
+  public_key = var.public_key
 }
